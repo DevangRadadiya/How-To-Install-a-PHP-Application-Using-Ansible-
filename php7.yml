@@ -1,0 +1,48 @@
+---
+
+- hosts: php
+  remote_user: root
+  become: yes
+  tasks :
+    
+    - name: Install epel repo
+      yum:
+        name: http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        state: present
+    
+    - name: Install remi repo
+      yum_repository:
+        name: remi-php70
+        description: Remi's PHP 7.0 RPM repository for CentOS
+        state: present
+        mirrorlist: http://rpms.remirepo.net/enterprise/7/php70/mirror
+        enabled: yes
+        gpgcheck: 1
+        gpgkey: http://rpms.remirepo.net/RPM-GPG-KEY-remi
+    
+    - name: Installation of Required packages
+      package:
+        enablerepo: remi-php70
+        name:
+          - php
+          - php-devel
+          - php-common
+          - php-xml
+          - php-mysqlnd
+          - php-pecl-igbinary
+          - php-soap
+          - php-pecl-memcache
+          - php-mbstring
+          - php-mcrypt
+          - php-intl
+          - httpd
+          - mod_ssl
+          - php-pdo
+          - libcurl-devel
+          - gcc
+        state: present
+        
+    - name: restart apache
+      service:
+        name: httpd
+        state: restarted
